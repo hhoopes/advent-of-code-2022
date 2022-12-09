@@ -1,0 +1,25 @@
+$ cd /
+$ ls
+dir a
+1 b.txt
+2 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+3 f
+4 g
+5 h.lst
+$ cd e
+$ ls
+6 i
+dir m
+$ cd m
+25 file.txt
+$ cd ..
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+7 j
+8 d.log
