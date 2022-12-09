@@ -26,23 +26,23 @@ def add_sizes(children)
 end
 
 def build_tree(input, key: '/')
-  pwd = Directory.new('/')
-  root = pwd
+  current_dir = Directory.new('/')
+  root = current_dir
 
   input.split("\n").each do |line|
     case line
-    when /\$ cd \//
-    when /\$ cd \.\./
-      pwd = pwd.parent
+    when '$ cd /'
+    when '$ cd ..'
+      current_dir = current_dir.parent
     when /\$ cd (.+)/
       key = $1
-      pwd = pwd.children[key]
+      current_dir = current_dir.children[key]
     when '$ ls' 
     when /(\d+) .+/
-      pwd.data += $1.to_i
+      current_dir.data += $1.to_i
     when /dir (.+)/
       key = $1
-      pwd.children[key] = Directory.new(key, parent: pwd) 
+      current_dir.children[key] = Directory.new(key, parent: current_dir)
     end
   end
   root
