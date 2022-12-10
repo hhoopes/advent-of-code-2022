@@ -7,13 +7,23 @@ class Directory
     @children = children
     @parent = parent
   end
+
+  def key_prefix
+    node = parent
+    prefix = name
+    until node.nil?
+      prefix += '_' + node.name
+      node = node.parent
+    end
+    prefix
+  end
 end
 
 @sizes = {}
 
 def calculate_dir_size(input)
   tree = build_tree(input)
-  add_sizes(tree.children)
+  @root_size = tree.data + add_sizes(tree.children)
   @sizes
 end
 
@@ -35,13 +45,13 @@ def build_tree(input, key: '/')
     when '$ cd ..'
       current_dir = current_dir.parent
     when /\$ cd (.+)/
-      key = $1
+      key = current_dir.key_prefix + $1
       current_dir = current_dir.children[key]
     when '$ ls' 
     when /(\d+) .+/
       current_dir.data += $1.to_i
     when /dir (.+)/
-      key = $1
+      key = current_dir.key_prefix + $1
       current_dir.children[key] = Directory.new(key, parent: current_dir)
     end
   end
@@ -52,3 +62,7 @@ input = File.read('./input.txt')
 
 puts output = calculate_dir_size(input)
 puts output.values.select { |v| v <= 100000 }.sum
+
+# part 2
+remainder =  @root_size - 40000000
+result =  output.sort_by { |k, v| v }.detect{ |v| v.last >= remainder }
