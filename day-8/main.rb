@@ -33,17 +33,10 @@ class Forest
   end
 
   def scenic_score(sequence, point_of_reference)
-    return 1 if sequence.size == 1
-
-    prev = 0
     score = 0
     sequence.each do |tree|
-      return score if prev > tree
-
       score += 1
       return score if tree >= point_of_reference
-
-      prev = tree
     end
     score
   end

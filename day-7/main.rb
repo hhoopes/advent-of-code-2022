@@ -60,7 +60,7 @@ end
 
 input = File.read('./input.txt')
 
-puts output = calculate_dir_size(input)
+output = calculate_dir_size(input)
 puts output.values.select { |v| v <= 100000 }.sum
 
 # part 2
