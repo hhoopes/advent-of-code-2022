@@ -37,9 +37,32 @@ class List
   end
 
   def remove(node)
+    @head = node.right if @head == node
+    @tail = node.left if @tail == node
     node.left.right = node.right if node.left
     node.right.left = node.left if node.right
     node
+  end
+
+  def find_index_for_value(value = 0)
+    i = 0
+    current = head
+    while current
+      return i if current.value == value
+      current = current.right
+      i += 1
+    end
+    i
+  end
+
+  def find_value_for_index(index)
+    current = head
+    i = 0
+    while index > i
+      i += 1
+      current = current.right
+    end
+    current.value
   end
 
   def find_index(node) # refactor, returns an index for nil
@@ -58,7 +81,7 @@ class List
     new_index.times do
       current_node = current_node.right
     end
-# binding.pry
+
     # check for head/tail relationships and reconnect where removed node
     original_right = node.right
     original_left = node.left
@@ -68,7 +91,6 @@ class List
     @tail = original_left if tail == node
     
     # reconnect everything whee
-    binding.pry
     prev_right = current_node.right
     current_node&.right = node
     prev_right&.left = node
@@ -89,9 +111,11 @@ class List
 
   def move(node, val)
     i = find_index(node)
-    mode = val.positive? ? :right : :left 
-
-    will_lap, new_index = (val + i).divmod length
+    if val.positive?
+      will_lap, new_index = (val + i).divmod length
+    else
+      will_lap, new_index = (i + length - val.abs - 1).divmod length
+    end
     return if val.zero? || new_index == i
 
     new_head = true if new_index.zero?
@@ -112,7 +136,7 @@ class List
       current_node.left = old_tail
       current_node.right = nil
     else
-      new_index -= 1 if will_lap > 0
+      # new_index -= 1 if will_lap > 0
       swap(new_index, node)
     end
   end
@@ -124,8 +148,12 @@ original_nodes = input.map { |val| list.push(val.to_i) }
 original_nodes.each do |node|
   list.move(node, node.value)
 end
-binding.pry
-# some bug where a value isn't being accounted for properly, and values doesn't return. 
-# 3 is still listed as the right node of 2, but 2 is correctly established as the tail. Probably when move 3, need to reassign left/right for its prev neighbors
-# thought I fixed, but now the 3 & 2 are switched, while the tail shows properly as the 2
-puts list.values
+# puts list.values
+
+zero_index = list.find_index_for_value(0)
+sum = 
+list.find_value_for_index(1000 + zero_index % list.length) +
+list.find_value_for_index(2000 + zero_index % list.length) +
+list.find_value_for_index(3000 + zero_index % list.length)
+
+puts sum
