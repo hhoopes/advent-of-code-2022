@@ -36,12 +36,16 @@ class List
     node
   end
 
-  def remove(node)
-    @head = node.right if @head == node
-    @tail = node.left if @tail == node
-    node.left.right = node.right if node.left
-    node.right.left = node.left if node.right
-    node
+  def move(node, val)
+    i = find_index(node)
+    if val.positive?
+      new_index = (val + i) % length
+    else
+      new_index = (i + length - val.abs - 1) % length
+    end
+    return if val.zero? || new_index == i
+
+    swap(new_index, node)
   end
 
   def find_index_for_value(value = 0)
@@ -52,7 +56,6 @@ class List
       current = current.right
       i += 1
     end
-    i
   end
 
   def find_value_for_index(index)
@@ -76,6 +79,19 @@ class List
     end
   end
 
+  def print_values
+    v = []
+    current = head
+    loop do
+      v << current.value
+      break if current.right.nil?
+      current = current.right
+    end
+    v
+  end
+
+  private
+
   def swap(new_index, node)
     current_node = head
     new_index.times do
@@ -97,49 +113,6 @@ class List
     node.left = current_node
     node.right = prev_right
   end
-
-  def values
-    v = []
-    current = head
-    loop do 
-      v << current.value 
-      break if current.right.nil?
-      current = current.right 
-    end
-    v
-  end
-
-  def move(node, val)
-    i = find_index(node)
-    if val.positive?
-      will_lap, new_index = (val + i).divmod length
-    else
-      will_lap, new_index = (i + length - val.abs - 1).divmod length
-    end
-    return if val.zero? || new_index == i
-
-    new_head = true if new_index.zero?
-    new_tail = true if new_index == length - 1
-
-    if new_head
-      current_node = remove(node)
-      old_head = @head
-      @head = current_node
-      old_head.left = current_node
-      current_node.right = old_head 
-      current_node.left = nil
-    elsif new_tail
-      current_node = remove(node)
-      old_tail = @tail
-      @tail = current_node
-      old_tail.right = current_node
-      current_node.left = old_tail
-      current_node.right = nil
-    else
-      # new_index -= 1 if will_lap > 0
-      swap(new_index, node)
-    end
-  end
 end
 
 list = List.new
@@ -148,12 +121,11 @@ original_nodes = input.map { |val| list.push(val.to_i) }
 original_nodes.each do |node|
   list.move(node, node.value)
 end
-# puts list.values
 
 zero_index = list.find_index_for_value(0)
-sum = 
-list.find_value_for_index(1000 + zero_index % list.length) +
-list.find_value_for_index(2000 + zero_index % list.length) +
-list.find_value_for_index(3000 + zero_index % list.length)
+sum =
+list.find_value_for_index((1000 + zero_index) % list.length) +
+list.find_value_for_index((2000 + zero_index) % list.length) +
+list.find_value_for_index((3000 + zero_index) % list.length)
 
 puts sum
